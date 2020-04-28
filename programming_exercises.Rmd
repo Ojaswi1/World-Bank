@@ -1,0 +1,58 @@
+---
+title: "Programming Exercises"
+author: "Your name"
+output: github_document
+---
+
+## Load necessary libraries
+
+```{r}
+library(tidyverse)
+```
+
+## Compute the number of unique values in each column of `iris`
+
+### Using a `for` loop
+
+```{r}
+
+```
+
+### Using a `map` function
+
+```{r}
+
+```
+
+## Calculate the square of each element in vector `x`
+
+```{r}
+x <- seq(from = 30, to = 1)
+x
+```
+
+### Using a `for` loop
+
+```{r}
+
+```
+
+### Using a `map` function
+
+```{r}
+
+```
+
+## Write a function to calculate length of sides in a right-triangle using the Pythagorean Theorem
+
+```{r}
+
+```
+
+## Session info
+
+```{r}
+devtools::session_info()
+```
+
+

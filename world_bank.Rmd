@@ -1,0 +1,32 @@
+---
+title: "Exploring World Bank Data"
+author: "Your name"
+output: github_document
+---
+
+## Load necessary libraries
+
+```{r}
+library(tidyverse)
+```
+
+## Write a function to import the data files
+
+```{r}
+```
+
+## Import the data
+
+```{r}
+```
+
+## Explore the data
+
+
+## Session info
+
+```{r}
+devtools::session_info()
+```
+
+
