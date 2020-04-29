@@ -1,6 +1,6 @@
 ---
 title: "Programming Exercises"
-author: "Your name"
+author: "Ojaswi Malik"
 output: github_document
 ---
 
@@ -16,37 +16,54 @@ library(tidyverse)
 
 ```{r}
 
+output_length <- vector(mode = "numeric", length = ncol(iris))
+for( i in seq_along(iris)) {
+  output_length[[i]] <- length(unique(iris[[i]]))
+}
+
+output_length
 ```
 
 ### Using a `map` function
 
 ```{r}
-
+map_dbl(iris, ~ length(unique(.x)))
 ```
 
 ## Calculate the square of each element in vector `x`
 
 ```{r}
 x <- seq(from = 30, to = 1)
-x
 ```
 
 ### Using a `for` loop
 
 ```{r}
+output_xsquare <- vector("numeric", length(x))
+for (i in seq_along(x)) {
+  output_xsquare[[i]] <- x[i]^2
+}
 
+output_xsquare
 ```
 
 ### Using a `map` function
 
 ```{r}
 
+square <- function(a) {
+  sqr <- a^2
+  return (sqr)
+}
+
+map_dbl(x, square)
 ```
 
 ## Write a function to calculate length of sides in a right-triangle using the Pythagorean Theorem
 
 ```{r}
 
+pythagorean <- function(a,b,c)
 ```
 
 ## Session info
