@@ -63,7 +63,38 @@ map_dbl(x, square)
 
 ```{r}
 
-pythagorean <- function(a,b,c)
+#Mesage to the user to indicate order of the arguements in the pythagorean function 
+
+message("In the function pythagorean, please input any 2 arguements in the order (side a, side b, hypotenuse) for a given right triangle")
+
+pythagorean <- function(a = NULL ,b = NULL ,c = NULL) {
+  all_sides <- c(a,b,c)
+  
+#Conditional execution to ensure only 2 arguements are entered by user
+  if (length(all_sides) == 1) {
+    stop("Error: Only 1 side given. Please provide length of 2 sides!")
+  } else if (length(all_sides) == 3 ) {
+    stop("Error: 3 sides given. Please provide length of 2 sides!")
+  } 
+  
+#Conditional execution to ensure no non-numeric arguements are entered by user
+  if (!is.numeric(all_sides)) {
+    stop("Please enter numeric values")
+  }
+  
+#Conditional execution to calculate the length of the third side depending on the sides the user had entered
+  if( !is.null(a) && !is.null(b) ) {
+    result <- sqrt(a^2 + b^2)
+  } else if (!is.null(c) && !is.null(b)) {
+    result <- sqrt(c^2 - b^2)
+  } else if (!is.null(c) && !is.null(a)) {
+    result <- sqrt(c^2 - a^2)
+  }
+
+#To return the result
+  return(result)
+}
+
 ```
 
 ## Session info
