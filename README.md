@@ -1,6 +1,6 @@
 # hw04
 
-Ojaswi Malik
+*Ojaswi Malik*
 
 The completed knitted github documents can be found here:
 
