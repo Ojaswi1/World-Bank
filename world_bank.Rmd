@@ -14,18 +14,23 @@ library(tidyverse)
 
 ```{r}
 import_data <- function(x) {
+  #To read 1 csv file and skip the first 3 lines and reach where the column names start
   read_csv(x, skip = 3) %>%
+  #To remove these columns because they will not be used in the analysis
     select(-"X65",-"Indicator Code", -"Country Code") %>%
+  #To create a column for Year and put all the years in that column with respective values in the rows
     pivot_longer(
       cols = `1960`:`2019`,
       names_to = "Year",
       values_to = "Value",
       names_ptypes = list(Year = double())
     ) %>%
+  #To extract indicator names from values column and make them seperate columns
     pivot_wider(
     names_from = "Indicator Name",
     values_from = "Value"
   ) %>%
+  #To select and rename only those columns necessary for the analysis
     select("Country Name", "Year", "Population growth (annual %)", "Forest area (% of land area)", "Urban population (% of total population)", "Total greenhouse gas emissions (kt of CO2 equivalent)") %>%
     rename(
       country = "Country Name",
@@ -42,14 +47,23 @@ import_data <- function(x) {
 ## Import the data
 
 ```{r}
+#To list all the csv files in the 'data_world_bank' directory in  all_data 
+all_data <- list.files(path = "data_world_bank", pattern = "*.csv", full.names = TRUE)
 
+#To apply the function import_data to each file in all_data
+seperate_dfs <- lapply(all_data, import_data)
 
+#To bind all the different countries' data together in 1 dataframe
+wb_data_bind <- bind_rows(seperate_dfs)
 
-import_data("~/Desktop/cfss/hw04/data_world_bank/API_ABW_DS2_en_csv_v2_827616.csv")
 ```
 
 ## Explore the data
 
+```{r}
+
+
+```
 
 ## Session info
 
