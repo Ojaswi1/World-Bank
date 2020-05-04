@@ -31,22 +31,22 @@ import_data <- function(x) {
     values_from = "Value"
   ) %>%
   #To select and rename only those columns necessary for the analysis
-    select("Country Name", "Year", "Population growth (annual %)", "Forest area (% of land area)", "Urban population (% of total population)", "Total greenhouse gas emissions (kt of CO2 equivalent)") %>%
+    select("Country Name", "Year", "GDP (current US$)", "Total greenhouse gas emissions (kt of CO2 equivalent)", "Forest area (% of land area)" , "Urban population (% of total population)") %>%
     rename(
       country = "Country Name",
       year = "Year",
-      pop_growth = "Population growth (annual %)",
+      gdp = "GDP (current US$)",
+      greenhouse_emissions = "Total greenhouse gas emissions (kt of CO2 equivalent)" , 
       forest_area = "Forest area (% of land area)",
-      urban_pop = "Urban population (% of total population)" ,
-      greenhouse_gas = "Total greenhouse gas emissions (kt of CO2 equivalent)"
-    )
+      urban_population= "Urban population (% of total population)"
+      )
     
 }
 ```
 
 ## Import the data
 
-```{r}
+```{r, warning = FALSE, message=FALSE}
 #To list all the csv files in the 'data_world_bank' directory in  all_data 
 all_data <- list.files(path = "data_world_bank", pattern = "*.csv", full.names = TRUE)
 
@@ -56,14 +56,102 @@ seperate_dfs <- lapply(all_data, import_data)
 #To bind all the different countries' data together in 1 dataframe
 wb_data_bind <- bind_rows(seperate_dfs)
 
+
 ```
 
 ## Explore the data
 
+**Goal**: In my analysis I want to discover the effects of urban populations on forest areas, and in turn the effect on greenhouse gas emissions and ultimately the average GDP
+
+### Analysis 1
+
+**Analysis 1 Goal**: In the first analysis, I want to see if areas which have more than 50% of urban population tend to have more or less forest areas. For this I will categorize those countries with more than 50% of urban population as "Yes" in majority of urban population, and those with less than 50% as "No" in majority of urban population.
+
 ```{r}
+
+urban_majority <- wb_data_bind %>%
+  group_by(country) %>%
+  #To get the average value of urban population and forest area over the years, and remove any NA values
+  summarise(
+    avg_urban_pop = mean(urban_population, na.rm = TRUE),
+    avg_forest_area = mean(forest_area, na.rm = TRUE)) %>%
+  #Conditional Execution to categorise those countries with more than 50% of urban population as yes in majority, and those with less than 50% as no in majority
+  mutate( Majority = if_else(avg_urban_pop > 50, "Yes", "No")) %>%
+  filter(!is.na(Majority))
+
+urban_majority %>%
+  ggplot(mapping = aes(x = Majority, y =avg_forest_area)) + 
+  geom_boxplot() +
+  labs(
+    title = "Relationship between urban populations and forest area",
+    x = "Majority of urban population (>50% of total population)",
+    y = "Average Forest area (% of land area) "
+  )
+   
+   
+```
+
+
+**Analysis 1 Observation**:From the boxplot above, there is no clear relationship between forest areas and urban populations in all countries. For countries with both more than and less than 50% of urban populations, have a very similiar median of average forest area. However, those countries with more than 50% of urban population have a higher variance due to an outlier in terms of average forest area. This is indicated by a longer whisker for the 'Yes' boxplot.
+
+### Analysis 2
+
+**Analysis 2 Goal**:In the next analysis, I want to discover any underlying relationship between forest areas and greenhouse gas emissions.
+
+
+```{r}
+
+wb_data_bind %>%
+  #Grouping by year to get year-wise average comparisons. this is in contrast to the analysis 1, where the data was grouped by country
+  group_by(year) %>%
+  summarise(
+    avg_greenhouse = mean(greenhouse_emissions, na.rm = TRUE),
+    avg_forest = mean(forest_area, na.rm = TRUE)
+  ) %>%
+  ggplot(mapping = aes(x = avg_greenhouse, y = avg_forest ) ) +
+  #Using a smoothing line to visualise the plot
+  geom_smooth() +
+  labs(
+    title = "Relationship between greenhouse gas emissions and average forest area ",
+    x = "Total average greenhouse gas emissions ",
+    y = "Average Forest area (% of land area) "
+  )
 
 
 ```
+
+**Analysis 2 Observation**: From the graph above, we can notice a negative relationship between average greenhouse gas emissions and average forest area, i.e. an increase in average greenhouse emissions is accompanied with a decrease in the average forest area. This could be due to more factories replacing forested land and emitting greenhouse gases.
+
+### Analysis 3
+
+**Analysis 3 Goal**: In my final analysis, I want to see if there is any relationship between the rising greenhouse emissions and the average GDP of countries over the world.
+
+
+```{r}
+
+wb_data_bind %>%
+  group_by(country) %>%
+  summarise(
+    avg_gdp = mean(gdp, na.rm = TRUE),
+    avg_greenhouse = mean(greenhouse_emissions, na.rm = TRUE)
+  ) %>%
+  ggplot(mapping = aes(x = avg_gdp, y = avg_greenhouse )) + 
+  geom_point() +
+  geom_smooth() + 
+  #Scaling both the X-axis to have a closer and cleaner look to the ggplot
+  scale_x_log10() + 
+  scale_y_log10() + 
+  labs(
+    title = "Relationship between GDP and Greenhouse gas emissions",
+    x = "Average GDP",
+    y = "Total average greenhouse gas emissions "
+  )
+
+```
+
+**Analysis 3 Observation**: From the above graph, we can ascertain that there is general positive relationship between average GDP and total average greenhouse gas emissions. Hence, with an increase in GDP, the greenhouse gas emissions also increase. This could be because as countries become more developed (indicated by higher GDP), their reliance on modern machinery which emits greenhouse gases increases. Moreover, this result is more concentrated in the center of the smoothing line. The edges have outliers which lead to an increase in the width of the smoothing band.
+
+
 
 ## Session info
 
