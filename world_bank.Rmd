@@ -1,6 +1,6 @@
 ---
 title: "Exploring World Bank Data"
-author: "Your name"
+author: "Ojaswi Malik"
 output: github_document
 ---
 
@@ -13,11 +13,39 @@ library(tidyverse)
 ## Write a function to import the data files
 
 ```{r}
+import_data <- function(x) {
+  read_csv(x, skip = 3) %>%
+    select(-"X65",-"Indicator Code", -"Country Code") %>%
+    pivot_longer(
+      cols = `1960`:`2019`,
+      names_to = "Year",
+      values_to = "Value",
+      names_ptypes = list(Year = double())
+    ) %>%
+    pivot_wider(
+    names_from = "Indicator Name",
+    values_from = "Value"
+  ) %>%
+    select("Country Name", "Year", "Population growth (annual %)", "Forest area (% of land area)", "Urban population (% of total population)", "Total greenhouse gas emissions (kt of CO2 equivalent)") %>%
+    rename(
+      country = "Country Name",
+      year = "Year",
+      pop_growth = "Population growth (annual %)",
+      forest_area = "Forest area (% of land area)",
+      urban_pop = "Urban population (% of total population)" ,
+      greenhouse_gas = "Total greenhouse gas emissions (kt of CO2 equivalent)"
+    )
+    
+}
 ```
 
 ## Import the data
 
 ```{r}
+
+
+
+import_data("~/Desktop/cfss/hw04/data_world_bank/API_ABW_DS2_en_csv_v2_827616.csv")
 ```
 
 ## Explore the data
